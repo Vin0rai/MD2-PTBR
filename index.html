@@ -2,12 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Sorteio de Cartas - TURBAS</title>
+  <title>Sorteio de Cartas – TURBAS</title>
 
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #1e1e1e;
+      background: #1b1b1b;
       color: #fff;
       padding: 20px;
     }
@@ -19,46 +19,68 @@
     #pilhas {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 15px;
-      max-width: 700px;
-      margin: 0 auto 30px;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto 40px;
     }
 
     .pilha {
-      background: #333;
-      padding: 20px;
-      text-align: center;
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-radius: 12px;
       cursor: pointer;
-      border-radius: 8px;
-      transition: 0.2s;
-      font-weight: bold;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      transition: transform 0.2s;
+      overflow: hidden;
     }
 
     .pilha:hover {
-      background: #555;
+      transform: scale(1.05);
+    }
+
+    .pilha::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .pilha span {
+      position: relative;
+      z-index: 2;
+      margin-bottom: 10px;
+      padding: 8px 14px;
+      background: rgba(0,0,0,0.75);
+      border-radius: 6px;
+      font-weight: bold;
     }
 
     #cartas {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
     }
 
     .carta {
-      width: 140px;
-      border-radius: 8px;
+      width: 150px;
+      border-radius: 10px;
       border: 2px solid #444;
     }
 
     button {
       display: block;
-      margin: 25px auto;
-      padding: 12px 24px;
+      margin: 30px auto;
+      padding: 12px 28px;
       font-size: 16px;
-      cursor: pointer;
       border-radius: 8px;
       border: none;
+      cursor: pointer;
       background: #a00;
       color: #fff;
     }
@@ -73,12 +95,24 @@
 <h1>Sorteio de Cartas – TURBAS</h1>
 
 <div id="pilhas">
-  <div class="pilha" data-pilha="1">TURBA 1–2</div>
-  <div class="pilha" data-pilha="2">TURBA 3–4</div>
-  <div class="pilha" data-pilha="3">TURBA 5</div>
-  <div class="pilha" data-pilha="4">TURBA 6–7</div>
-  <div class="pilha" data-pilha="5">TURBA 8–9</div>
-  <div class="pilha" data-pilha="6">TURBA 10</div>
+  <div class="pilha" data-pilha="1" data-verso="Verso-1-2.png">
+    <span>TURBA 1–2</span>
+  </div>
+  <div class="pilha" data-pilha="2" data-verso="Verso-3-4.png">
+    <span>TURBA 3–4</span>
+  </div>
+  <div class="pilha" data-pilha="3" data-verso="Verso-5.png">
+    <span>TURBA 5</span>
+  </div>
+  <div class="pilha" data-pilha="4" data-verso="Verso-6-7.png">
+    <span>TURBA 6–7</span>
+  </div>
+  <div class="pilha" data-pilha="5" data-verso="Verso-8-9.png">
+    <span>TURBA 8–9</span>
+  </div>
+  <div class="pilha" data-pilha="6" data-verso="Verso-10.png">
+    <span>TURBA 10</span>
+  </div>
 </div>
 
 <h2>Cartas Reveladas</h2>
@@ -89,36 +123,12 @@
 <script>
   // CONFIGURAÇÃO DAS PILHAS
   const pilhas = {
-    1: {
-      nome: "TURBA 1-2",
-      pasta: "TURBA-1-2",
-      cartas: ["1a.png", "1b.png"]
-    },
-    2: {
-      nome: "TURBA 3-4",
-      pasta: "TURBA-3-4",
-      cartas: ["2a.png", "2b.png"]
-    },
-    3: {
-      nome: "TURBA 5",
-      pasta: "TURBA-5",
-      cartas: ["5.png"]
-    },
-    4: {
-      nome: "TURBA 6-7",
-      pasta: "TURBA-6-7",
-      cartas: ["6.png"]
-    },
-    5: {
-      nome: "TURBA 8-9",
-      pasta: "TURBA-8-9",
-      cartas: ["8.png"]
-    },
-    6: {
-      nome: "TURBA 10",
-      pasta: "TURBA-10",
-      cartas: ["10.png"]
-    }
+    1: { pasta: "TURBA-1-2", cartas: ["1a.png", "1b.png"] },
+    2: { pasta: "TURBA-3-4", cartas: ["2a.png", "2b.png"] },
+    3: { pasta: "TURBA-5", cartas: ["5.png"] },
+    4: { pasta: "TURBA-6-7", cartas: ["6.png"] },
+    5: { pasta: "TURBA-8-9", cartas: ["8.png"] },
+    6: { pasta: "TURBA-10", cartas: ["10.png"] }
   };
 
   function sortearCarta(pilhaId) {
@@ -131,7 +141,6 @@
     const salvas = JSON.parse(localStorage.getItem("cartas")) || [];
 
     salvas.push({
-      pilhaId,
       pasta: pilhas[pilhaId].pasta,
       carta
     });
@@ -154,6 +163,11 @@
   }
 
   document.querySelectorAll(".pilha").forEach(pilha => {
+    // aplica o verso como background
+    const verso = pilha.dataset.verso;
+    pilha.style.backgroundImage = `url('cartas/versos/${verso}')`;
+
+    // clique
     pilha.addEventListener("click", () => {
       const pilhaId = pilha.dataset.pilha;
       const carta = sortearCarta(pilhaId);
@@ -167,7 +181,6 @@
     renderizarCartas();
   });
 
-  // Renderiza automaticamente ao abrir a página
   renderizarCartas();
 </script>
 

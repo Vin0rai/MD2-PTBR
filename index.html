@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sorteio de Cartas por Nível</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    #pilhas {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      max-width: 600px;
+      margin: 0 auto 30px;
+    }
+
+    .pilha {
+      background: #333;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+
+    .pilha:hover {
+      background: #555;
+    }
+
+    #cartas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .carta {
+      width: 120px;
+      border-radius: 6px;
+      border: 2px solid #444;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Sorteio de Cartas</h1>
+
+<div id="pilhas">
+  <div class="pilha" data-nivel="1">Nível 1</div>
+  <div class="pilha" data-nivel="2">Nível 2</div>
+  <div class="pilha" data-nivel="3">Nível 3</div>
+  <div class="pilha" data-nivel="4">Nível 4</div>
+  <div class="pilha" data-nivel="5">Nível 5</div>
+  <div class="pilha" data-nivel="6">Nível 6</div>
+</div>
+
+<h2>Cartas Reveladas</h2>
+<div id="cartas"></div>
+
+<button id="limpar">Apagar Cartas Reveladas</button>
+
+<script>
+  const cartasPorNivel = {
+    1: ["1a.png", "1b.png", "1c.png"],
+    2: ["2a.png", "2b.png"],
+    3: ["3a.png", "3b.png"],
+    4: ["4a.png"],
+    5: ["5a.png", "5b.png"],
+    6: ["6a.png"]
+  };
+
+  function sortearCarta(nivel) {
+    const cartas = cartasPorNivel[nivel];
+    const indice = Math.floor(Math.random() * cartas.length);
+    return cartas[indice];
+  }
+
+  function salvarCarta(nivel, carta) {
+    const salvas = JSON.parse(localStorage.getItem("cartas")) || [];
+    salvas.push({ nivel, carta });
+    localStorage.setItem("cartas", JSON.stringify(salvas));
+  }
+
+  function renderizarCartas() {
+    const container = document.getElementById("cartas");
+    container.innerHTML = "";
+
+    const salvas = JSON.parse(localStorage.getItem("cartas")) || [];
+
+    salvas.forEach(c => {
+      const img = document.createElement("img");
+      img.src = `cartas/nivel${c.nivel}/${c.carta}`;
+      img.className = "carta";
+      container.appendChild(img);
+    });
+  }
+
+  document.querySelectorAll(".pilha").forEach(pilha => {
+    pilha.addEventListener("click", () => {
+      const nivel = pilha.dataset.nivel;
+      const carta = sortearCarta(nivel);
+      salvarCarta(nivel, carta);
+      renderizarCartas();
+    });
+  });
+
+  document.getElementById("limpar").addEventListener("click", () => {
+    localStorage.removeItem("cartas");
+    renderizarCartas();
+  });
+
+  renderizarCartas();
+</script>
+
+</body>
+</html>
